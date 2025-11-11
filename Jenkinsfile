@@ -6,7 +6,7 @@ pipeline {
     }
 
     parameters {
-        choice(name: 'DEPLOY_ENV', choices: ['dev', 'qa', 'prod'], description: 'Select the deployment environment')
+        choice(name: 'DEPLOY_ENV', choices: ['dev', 'prod'], description: 'Select the deployment environment')
         choice(name: 'ACTION', choices: ['deploy', 'remove'], description: 'Am selecting for the action')
     }
 
@@ -64,32 +64,6 @@ pipeline {
                 sh "sudo docker image prune -af"
             }
         }
-        // stage('Build the Docker images') {
-        //     when{
-        //         allOf {
-        //             expression { params.DEPLOY_ENV == 'dev' }
-        //             expression { params.ACTION == 'deploy' }
-        //         }        
-        //     }
-        //     steps {
-        //         sh 'sudo docker build -t ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest .'
-        //     }
-        // }
-        // stage('Remove the docker images') {
-        //     when {
-        //         allOf {
-        //             expression { params.DEPLOY_ENV == 'dev' }
-        //             expression { params.ACTION == 'remove' }
-        //         }
-        //     }
-        //     steps {
-        //         echo "Removing all the images Locally....!!!!"
-        //         sh '''
-        //         sudo docker rmi ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest || echo "Image not found, skipping..."
-        //         sudo docker system prune -af
-        //         '''
-        //     }
-        // }
         stage('Remove Jar Build') {
             when {
                 allOf {
@@ -100,6 +74,64 @@ pipeline {
             steps {
                 echo 'Removing Target Dir from the maven project'
                 sh 'mvn clean'
+            }
+        }
+        // Prodction stages
+        stage('Build the Docker images') {
+            when{
+                allOf {
+                    expression { params.DEPLOY_ENV == 'prod' }
+                    expression { params.ACTION == 'deploy' }
+                }        
+            }
+            steps {
+                echo "Build the Docker image....."
+                sh 'sudo docker build -t ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest .'
+            }
+        }
+        stage('Login to DockerHub') {
+            when {
+                allOf {
+                    expression { params.DEPLOY_ENV == 'prod' }
+                    expression { params.ACTION == 'deploy' }
+                }
+            }
+            steps {
+                echo "Logging in to DockerHub..."
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+                    sh 'echo "$DOCKERHUB_PASS" | sudo docker login -u "$DOCKERHUB_USER" --password-stdin'
+                }
+            }
+        }
+
+        stage('Push Docker Image to DockerHub') {
+            when {
+                allOf {
+                    expression { params.DEPLOY_ENV == 'prod' }
+                    expression { params.ACTION == 'deploy' }
+                }
+            }
+            steps {
+                echo "Pushing Docker image to DockerHub..."
+                sh '''
+                    sudo docker push ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest
+                '''
+            }
+        }
+
+        stage('Cleanup Local Docker Images') {
+            when {
+                allOf {
+                    expression { params.DEPLOY_ENV == 'prod' }
+                    expression { params.ACTION == 'deploy' }
+                }
+            }
+            steps {
+                echo "Removing local Docker images..."
+                sh '''
+                    sudo docker rmi ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest || true
+                    sudo docker system prune -af
+                '''
             }
         }
     }
