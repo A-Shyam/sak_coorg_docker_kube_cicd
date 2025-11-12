@@ -8,6 +8,8 @@
 
 This project demonstrates how to Dockerize a Spring Boot application connected to a MySQL database, and how to automate its build and deployment using a Jenkins pipeline. The project includes:
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/c937ef7f-c5d1-4e2f-b7db-396beff30d0a" />
+
 - **Spring Boot application** packaged as a Docker container
 - **MySQL database** running in a separate Docker container
 - A shared Docker network for container communication
@@ -32,13 +34,23 @@ This project demonstrates how to Dockerize a Spring Boot application connected t
 - Jenkins Plugins: **stage view**
 
 ## Prerequisites
-
 - Jenkins installed with Docker and Maven available on the agent node  
 - Docker installed and running on the Jenkins agent machine  
-- Git access to this repository  
+- Git access to this repository
+
+## Preview photos
+
+<img width="1913" height="975" alt="image" src="https://github.com/user-attachments/assets/de8c5323-2823-4ff3-bfed-e8ae917f2697" />
+
+<img width="1885" height="812" alt="image" src="https://github.com/user-attachments/assets/8b1abf93-3ab4-45a3-9ce4-6cb22782f0cf" />
+
+<img width="1847" height="756" alt="image" src="https://github.com/user-attachments/assets/91c0eb37-0813-4b90-848b-d2bfe229384e" />
+
+<img width="1852" height="872" alt="image" src="https://github.com/user-attachments/assets/c49023fd-6dfa-4884-928e-cdd74845b8f0" />
+
+<img width="1125" height="812" alt="image" src="https://github.com/user-attachments/assets/0207271f-63d9-44b6-a6a6-771200beeecb" />
 
 ---
-
 ## How It Works
 
 1. **Docker Network Setup**  
