@@ -3,6 +3,7 @@
 #  Designed and Developed by: @sak_shetty
 #  Description:
 #     - Deploys MySQL 8.0 database
+#     - Stores root password and database name in a Kubernetes Secret
 #     - Exposes internal ClusterIP service for app connectivity
 ################################################################################
 
@@ -13,8 +14,11 @@ metadata:
   namespace: sak-shetty
 type: Opaque
 data:
-  MYSQL_ROOT_PASSWORD: cGFzc3dvcmQ=  # base64 of "password"
-  MYSQL_DATABASE: c3ByaW5nZGI=       # base64 of "springdb"
+  # base64 encoded values:
+  #   echo -n "password" | base64  →  cGFzc3dvcmQ=
+  #   echo -n "springdb" | base64  →  c3ByaW5nZGI=
+  MYSQL_ROOT_PASSWORD: cGFzc3dvcmQ=
+  MYSQL_DATABASE: c3ByaW5nZGI=
 
 ---
 apiVersion: apps/v1

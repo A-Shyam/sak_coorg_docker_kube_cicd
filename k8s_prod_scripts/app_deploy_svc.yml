@@ -24,6 +24,7 @@ spec:
       labels:
         app: springapp
     spec:
+      # Ensure app waits for MySQL before starting
       initContainers:
         - name: wait-for-mysql
           image: busybox
@@ -32,7 +33,7 @@ spec:
         - name: springapp
           image: sakit333/webapp_dev:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 8088
           env:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:mysql://mysql:3306/springdb
@@ -54,7 +55,7 @@ spec:
     app: springapp
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8080
+      port: 8088
+      targetPort: 8088
       nodePort: 30088
-  type: LoadBalancer
+  type: NodePort
